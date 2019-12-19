@@ -1,0 +1,831 @@
+/**
+ * JJTree template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  static = false;
+}
+
+PARSER_BEGIN(MyNewGrammar)
+package parser;
+import util.*;
+import ui.*;
+import java.util.Iterator;
+import java.util.ArrayList;
+
+
+public class MyNewGrammar
+{
+  public QTList qtList = new QTList();
+
+  public  boolean isError = false;
+
+  public nodeList nodelist = new nodeList();
+
+
+  public ArrayList < String > listError = new ArrayList < String > ();
+
+  public void printQTList()
+  {
+    qtList.printQTTable();
+  }
+
+  public static void main(String args [])
+  {
+    System.out.println("Reading from standard input...");
+    System.out.print("Enter an expression like \"1+(2+3)*var;\" :");
+    MyNewGrammar parser = new MyNewGrammar(System.in);
+    Token token = new Token();
+    //  token=parser.getNextToken();
+    //    while(token!=null) {
+    //      System.out.println(token.kind+" "+token.image);
+    //       token=parser.getNextToken();
+    //      }
+    try
+    {
+      SimpleNode n = parser.Start();
+      n.dump("");
+      System.out.println("Thank you.");
+      parser.printQTList();
+      Iterator<node> itr2 =  parser.nodelist.Nodelist.iterator();
+							while (itr2.hasNext()) {
+								node tmp = (node) itr2.next();
+							System.out.print(tmp.toString());
+								
+								System.out.print("2");
+					
+							}
+    }
+    catch (Exception e)
+    {
+      System.out.println("Oops.");
+      System.out.println(e.getMessage());
+   
+//      isError=true;
+//      listError.add(e.getMessage());
+    }
+  }
+}
+
+PARSER_END(MyNewGrammar)
+
+TOKEN : /*Keywords*/
+{
+  < MAIN : "main" >
+| < RETURN : "return" >
+| < FOR : "for" >
+| 	< WHILE : "while" >
+| < IF : "if" >
+| < ELSE : "else" >
+| < TRUE : "true" >
+| < FALSE : "flase" >
+| < BREAK : "break" >
+| < SWITCH : "switch" >
+| < CASE : "case" >
+| < VOID : "void" >
+| < AND : "&&" >
+| < OR : "||" >
+| < CONTINUE : "continue" >
+| < DEFAULT1 : "default" >
+}
+
+TOKEN : /*data type*/
+{
+  < INT : "int" >
+| < DOUBLE : "double" >
+| < FLOAT : "float" >
+| < STRING : "string" >
+| < CHAR : "char" >
+| < DO : "do" >
+}
+
+TOKEN : /*fu_hao*/
+{
+  < FEN : ";" >
+| < DOU : "," >
+| < MAO : ":" >
+}
+
+TOKEN : /*operators*/
+{
+  < PLUS : "+" >
+| < MINUS : "-" >
+| < MULTIPLY : "*" >
+| < DIVIDE : "/" >
+| < ASSIGN : "=" >
+| 	< ZENG : "++" >
+| < JIAN : "--" >
+}
+
+TOKEN : /*kuo_hao*/
+{
+  < ZH : "{" >
+| < YH : "}" >
+| < DY : ">" >
+| < XY : "<" >
+| < EQ : "==" >
+| < NE : "!=" >
+| < ZK : "(" >
+| < ZM : "[" >
+| < YM : "]" >
+| < YK : ")" >
+}
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| < "//" (~[ "\n", "\r" ])*
+    (
+      "\n"
+    | "\r"
+    | "\r\n"
+    ) >
+| < "/*" (~[ "*" ])* "*"
+    (
+      ~[ "/" ] (~[ "*" ])* "*"
+    )*
+    "/" >
+}
+
+TOKEN : /* LITERALS */
+{
+  < INTEGER_LITERAL :
+    < DECIMAL_LITERAL > ([ "l", "L" ])?
+  | < HEX_LITERAL > ([ "l", "L" ])?
+  | < OCTAL_LITERAL > ([ "l", "L" ])? 
+  >
+| < #DECIMAL_LITERAL : [ "1"-"9" ] ([ "0"-"9" ])* >
+| < #HEX_LITERAL : "0" [ "x", "X" ] ([ "0"-"9", "a"-"f", "A"-"F" ])+ >
+| < #OCTAL_LITERAL : "0" ([ "0"-"7" ])* >
+}
+TOKEN : /* FLOAT */
+{
+  < FLOAT_NUM :
+    [ "1"-"9" ] ([ "0"-"9" ])* "." ([ "0"-"9" ])*
+  | "0." ([ "0"-"9" ])* 
+  >
+}
+
+TOKEN : /* IDENTIFIERS */
+{
+  < IDENTIFIER :
+    < LETTER >
+    (
+      < LETTER >
+    | < DIGIT >
+    )* >
+| < #LETTER : [ "_", "a"-"z", "A"-"Z" ] >
+| < #DIGIT : [ "0"-"9" ] >
+}
+
+SimpleNode Start() :
+{}
+{
+  main_fun()
+  {
+    return jjtThis;
+  }
+}
+
+void main_fun() :
+{}
+{
+  (
+    LOOKAHEAD(2)
+    funSatement()
+  )*
+  (
+    < VOID >
+  | < INT >
+  )
+  < MAIN > < ZK > < YK > < ZH >
+  (
+    statementBlock()
+  )*
+  < YH >
+}
+
+void funSatement() :
+{
+Token id;
+ }
+{
+  Type() Identifier() < ZK >
+  (
+    Type() Identifier()
+    (
+      "," Type() Identifier()
+    )*
+  )?
+  < YK > 
+  < ZH >
+  (
+    statementBlock()
+  )*
+  < YH >
+}
+
+Token Type() :
+{
+  Token t = null;
+}
+{
+  t = < INT >
+  {
+    return t;
+  }
+| t = < DOUBLE >
+  {
+    return t;
+  }
+| t = < FLOAT >
+  {
+    return t;
+  }
+| t = < STRING >
+  {
+    return t;
+  }
+| t = < CHAR >
+  {
+    return t;
+  }
+| t = < VOID >
+  {
+    return t;
+  }
+}
+
+void declearStatement() :
+{
+  Token id;
+  Token exp = null;
+  Token type;
+  String e1 = null;
+}
+{
+  type = Type() id = Identifier()
+  {
+    if (!nodelist.isEmpty() && nodelist.isExist(id.image))
+    {
+      isError = true;
+      System.out.println("\u53d8\u91cf" + id.image + "\u91cd\u590d\u58f0\u660e,\u9519\u8bef\u5728" + id.endLine + "\u884c," + id.endColumn + "\u5217");
+      listError.add("\u53d8\u91cf" + id.image + "\u91cd\u590d\u58f0\u660e,\u9519\u8bef\u5728" + id.endLine + "\u884c," + id.endColumn + "\u5217");
+    }
+    else
+    {
+      nodelist.addnode(type.image, id.image,id.endLine,id.endColumn);
+    }			
+  }
+  (
+    exp = < ASSIGN > e1 = Expression()
+    {
+      QTInfo info = new QTInfo(exp.image, e1, "_", id.image);
+      qtList.addQTInfo(info);
+    }
+  )?
+  (
+    "," id = Identifier()
+    {
+      if (	!nodelist.isEmpty() && nodelist.isExist(id.image))
+      {
+        isError = true;
+        System.out.println("\u53d8\u91cf" + id.image + "\u91cd\u590d\u58f0\u660e,\u9519\u8bef\u5728" + id.endLine + "\u884c," + id.endColumn + "\u5217");
+        listError.add("\u53d8\u91cf" + id.image + "\u91cd\u590d\u58f0\u660e,\u9519\u8bef\u5728" + id.endLine + "\u884c," + id.endColumn + "\u5217");
+      }
+      else
+      {
+        nodelist.addnode(type.image, id.image,id.endLine,id.endColumn);
+      }
+    }
+    (
+      exp = < ASSIGN > e1 = Expression()
+      {
+        QTInfo info = new QTInfo(exp.image, e1, "_", id.image);
+        qtList.addQTInfo(info);
+      }
+    )?
+  )*
+}
+
+void assignStatement() :
+{
+  Token id;
+  String exp;
+  Token e1;
+}
+{
+  id = Identifier() e1 = < ASSIGN > 
+  exp = Expression()
+  {
+		if(nodelist.isExist(id.image)==false)
+		{
+		  
+        isError = true;
+        System.out.println("变量" + id.image + "未定义,\u9519\u8bef\u5728" + id.endLine + "\u884c," + id.endColumn + "\u5217");
+        listError.add("变量" + id.image + "未定义,\u9519\u8bef\u5728" + id.endLine + "\u884c," + id.endColumn + "\u5217");
+    }
+    
+    QTInfo qt = new QTInfo(e1.image, exp, "_", id.image);
+    qtList.addQTInfo(qt);
+  }
+}
+
+ConditionValue orExpression() :
+{
+  ConditionValue c1;
+  ConditionValue c2;
+}
+{
+  c1 = andExpression()
+  {
+    c2 = c1;
+  }
+  (
+    "||"
+    {
+      c1.backpatchFalseChain(QTInfo.size + 1);
+    }
+    c2 = andExpression()
+    {
+      c2.mergeTrue(c1);
+      c1 = c2;
+    }
+  )*
+  {
+    return c2;
+  }
+}
+
+ConditionValue andExpression() :
+{
+  ConditionValue e1, e2 = null;
+  Token rop = null;
+}
+{
+  e1 = NoBOOLExpression()
+  {
+    e2 = e1;
+  }
+  (
+    rop = < AND >
+    {
+      e1.backpatchTrueChain(QTInfo.size + 1);
+    }
+    e2 = NoBOOLExpression()
+    {
+      e2.mergeFalse(e1);
+      e1 = e2;
+    }
+  )*
+  {
+    return e2;
+  }
+}
+
+//逻辑非
+ConditionValue NoBOOLExpression() :
+{
+  ConditionValue c1;
+  ConditionValue c2 = new ConditionValue();
+  boolean flag = true;
+}
+{
+  ("!"
+  {
+    flag = false;
+  }
+  )? 
+  c1 = relExpression()
+  {
+    if (!flag)
+    {
+      c2.trueChain = c1.falseChain;
+      c2.falseChain = c1.trueChain;
+      return c2;
+    }
+    return c1;
+  }
+}
+
+ConditionValue relExpression() :
+{
+  String e1, e2 = null;
+  Token rop = null;
+  ConditionValue chain = new ConditionValue();
+}
+{
+  e1 = Expression()
+  (
+    (
+      rop = < DY >
+    | rop = < XY >
+    | rop = < EQ >
+    | rop = < NE >
+    )
+    e2 = Expression()
+  )?
+  {
+    if (rop != null)
+    {
+      QTInfo info = new QTInfo("J" + rop, e1, e2, "T");
+      qtList.addQTInfo(info);
+      chain.mergeTrue(info);
+    }
+    else
+    {
+      QTInfo info = new QTInfo("JNZ", e1, "_", "T");
+      qtList.addQTInfo(info);
+      chain.mergeTrue(info);
+    }
+    QTInfo info = new QTInfo("J", "_", "_", "F");
+    qtList.addQTInfo(info);
+    chain.mergeFalse(info);
+  }
+  {
+    return chain;
+  }
+}
+
+void ifStatement() :
+{
+  ConditionValue chain;
+  int tmark;
+  int fmark;
+}
+{
+  < IF > < ZK >
+  (
+    chain = orExpression()
+  )
+  {
+    chain.backpatchTrueChain(QTInfo.size + 1);
+  }
+  < YK > 
+  statementBlock()
+  {
+    fmark = QTInfo.size + 1;
+  }
+  (
+    LOOKAHEAD(1)
+    < ELSE >
+    {
+      QTInfo info = new QTInfo("J", "_", "_", 0);
+      qtList.addQTInfo(info);
+      chain.backpatchFalseChain(QTInfo.size + 1);
+      fmark++;
+    }
+    statementBlock()
+    {
+      info.setResult(QTInfo.size + 1);
+    }
+  )?
+  {
+    chain.backpatchFalseChain(fmark);
+  }
+}
+
+void AutoAdd() :
+{
+  Token id;
+  Token op;
+  String temp;
+}
+{
+  (
+    id = Identifier()
+    {
+		if(nodelist.isExist(id.image)==false)
+		{
+		  
+        isError = true;
+        System.out.println("变量" + id.image + "未定义,\u9519\u8bef\u5728" + id.endLine + "\u884c," + id.endColumn + "\u5217");
+        listError.add("变量" + id.image + "未定义,\u9519\u8bef\u5728" + id.endLine + "\u884c," + id.endColumn + "\u5217");
+    }
+    }
+    (
+      op = < ZENG >
+      {
+        temp = VariableNameGenerator.genVariableName();
+        qtList.addQTInfo(new QTInfo("+", id.image, "1", temp));
+        qtList.addQTInfo(new QTInfo("=", temp, "_", id.image));
+      }
+    | op = < JIAN >
+      {
+        temp = VariableNameGenerator.genVariableName();
+        qtList.addQTInfo(new QTInfo("-", id.image, "1", temp));
+        qtList.addQTInfo(new QTInfo("=", temp, "_", id.image));
+      }
+    )
+  )
+|
+  (
+    op = < ZENG >
+  | op = < JIAN >
+     id = Identifier()
+    {
+      if(nodelist.isExist(id.image)==false)
+		{
+		  
+        isError = true;
+        System.out.println("变量" + id.image + "未定义,\u9519\u8bef\u5728" + id.endLine + "\u884c," + id.endColumn + "\u5217");
+        listError.add("变量" + id.image + "未定义,\u9519\u8bef\u5728" + id.endLine + "\u884c," + id.endColumn + "\u5217");
+    }
+     }
+    {
+      temp = VariableNameGenerator.genVariableName();
+      qtList.addQTInfo(new QTInfo("+", id.image, "1", temp));
+      qtList.addQTInfo(new QTInfo("=", temp, "_", id.image));
+    }
+  )
+}
+
+void whileStatement() :
+{
+  ConditionValue chain = null;
+  int quad;
+}
+{
+  < WHILE > "("
+  {
+    quad = QTInfo.size + 1;
+    ;
+  }
+  (
+    chain = orExpression()
+  )
+  ")"
+  {
+    chain.backpatchTrueChain(QTInfo.size + 1);
+  }
+  statementBlock()
+  {
+    qtList.addQTInfo(new QTInfo("J", "_", "_", quad));
+    chain.backpatchFalseChain(QTInfo.size + 1);
+  }
+}
+
+void forStatement() :
+{
+  ConditionValue chain;
+  int e1, e2 = 0;
+}
+{
+  < FOR > < ZK >
+  (
+    declearStatement() ";"
+  | assignStatement() ";"
+  )
+  {
+    e1 = QTInfo.size + 1;
+  }
+  chain = relExpression() ";"
+  {
+    e2 = QTInfo.size + 1;
+  }
+  (
+    LOOKAHEAD(2)
+    AutoAdd()
+    {
+      qtList.addQTInfo(new QTInfo("J", "_", "_", e1));
+    }
+  | assignStatement()
+  )+
+  < YK >
+  {
+    chain.backpatchTrueChain(QTInfo.size + 1);
+  }
+  statementBlock()
+  {
+    qtList.addQTInfo(new QTInfo("J", "_", "_", e2));
+    chain.backpatchFalseChain(QTInfo.size + 1);
+  }
+}
+
+void doWhileStatement() :
+{
+  ConditionValue chain = null;
+  int quad;
+}
+{
+  < DO > < ZH >
+  {
+    quad = QTInfo.size + 1;
+  }
+  statementBlock() 
+  < YH > 
+  < WHILE > "(" chain = orExpression() ")"
+  {
+    chain.backpatchTrueChain(quad);
+    chain.backpatchFalseChain(QTInfo.size + 1);
+  }
+}
+
+void SwitchStatement() :
+{
+  int quad;
+  int quad1;
+  String str;
+  String t;
+}
+{
+  < SWITCH > "(" 
+  str = Expression() ")" 
+  "{"
+  (
+    < CASE > 
+    t = Expression() 
+    ":"
+    {
+      quad = QTInfo.size + 1;
+    }
+    {
+      quad++;
+      //匹配
+      QTInfo info = new QTInfo("case:", str, t, quad);
+      qtList.addQTInfo(info);
+    }
+    (
+      statementBlock()
+    )*
+  )*
+  < DEFAULT1 > ":"
+  {
+    quad1 = QTInfo.size + 1;
+  }
+  {
+    //匹配失败
+    quad1++;
+    QTInfo info = new QTInfo("case", str, "default", quad1);
+    qtList.addQTInfo(info);
+  }
+  statementBlock() 
+  "}"
+}
+
+void statement() :
+{}
+{
+  declearStatement() < FEN >
+|
+  (
+    assignStatement()
+  )?
+  < FEN >
+| ifStatement()
+| whileStatement()
+| forStatement()
+| SwitchStatement()
+| doWhileStatement() < FEN >
+| < BREAK > < FEN >
+| < CONTINUE > < FEN >
+
+
+} 
+
+void statementBlock() :
+{}
+{
+  (
+    statement()
+  )
+| 	"{"
+  (
+    statementBlock()
+  )*
+  "}"
+}
+
+String Expression() :
+{
+  String str;
+}
+{
+  str = AdditiveExpression()
+  {
+    return str;
+  }
+}
+
+String AdditiveExpression() :
+{
+  String first = null;
+  String middle = null;
+  String newTemp = null;
+  Token op = null;
+}
+{
+  first = MultiplicativeExpression()
+  {
+    newTemp = first;
+  }
+  (
+    (
+      op = "+"
+    | op = "-"
+    )
+    middle = MultiplicativeExpression()
+    {
+      newTemp = VariableNameGenerator.genVariableName();
+      QTInfo qt = new QTInfo(op.image, first, middle, newTemp);
+      qtList.addQTInfo(qt);
+      first = newTemp;
+    }
+  )*
+  {
+    return newTemp;
+  }
+}
+
+String MultiplicativeExpression() :
+{
+  String first;
+  String middle;
+  String newTemp = null;
+  Token op;
+}
+{
+  first = UnaryExpression()
+  {
+    newTemp = first;
+  }
+  (
+    (
+      op = "*"
+    | op = "/"
+    | op = "%"
+    )
+    middle = UnaryExpression()
+    {
+      newTemp = VariableNameGenerator.genVariableName();
+      QTInfo qt = new QTInfo(op.image, first, middle, newTemp);
+      qtList.addQTInfo(qt);
+      first = newTemp;
+    }
+  )*
+  {
+    return newTemp;
+  }
+}
+
+String UnaryExpression() :
+{
+  String str;
+  Token id;
+}
+{
+  (
+    "(" str = Expression() ")"
+  |
+    (
+      id = Identifier()
+      {
+		 if(nodelist.isExist(id.image)==false)
+		{
+		  
+        isError = true;
+        System.out.println("变量" + id.image + "未定义,\u9519\u8bef\u5728" + id.endLine + "\u884c," + id.endColumn + "\u5217");
+        listError.add("变量" + id.image + "未定义,\u9519\u8bef\u5728" + id.endLine + "\u884c," + id.endColumn + "\u5217");
+    }
+    
+        }
+    )
+    {
+      str = id.image;
+    }
+  | str = Integer()
+  |  id=< FLOAT_NUM >
+	{
+	  str=id.image;
+	}
+  )
+  {
+    return str;
+  }
+}
+
+Token Identifier() :
+{
+  Token t = null;
+}
+{
+  t = < IDENTIFIER >
+  
+  {
+    return t;
+  }
+}
+
+String Integer() :
+{
+  Token t = null;
+}
+{
+  t = < INTEGER_LITERAL >
+  {
+    return t.image;
+  }
+}
