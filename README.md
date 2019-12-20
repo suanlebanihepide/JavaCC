@@ -52,16 +52,14 @@ Mnc-javacc
 语句：Statement
 
 条件语句：ifStatement
-switch语句：SwtichState
-
+switch语句：SwtichStatement
 while语句：whileStatement
 dowhile语句：dowhileStatement
 for语句：forStatement
 
 自增自减语句：Auto
 声明语句：declearStatement
-赋值语句：assign
-
+赋值语句：assignStatement
 
 类型：Type
 表达式：Expression
@@ -70,38 +68,27 @@ for语句：forStatement
 与运算：andStatement
 运算符：Operator
 关系符：relExpresion
+
 ```
 ###文法：
 ```
-<程序> -> <类型> main "(" (<类型> ID)* ")" <语句块>
-<语句块> -> <语句> | { <语句块>*}
-<语句> -> <顺序语句> | <分支语句> | <循环语句>
-<顺序语句> -> (<声明语句> | <赋值语句> | <break语句> | <自增自减语句>) ";"
-<声明语句> -> <类型> ID (,ID)*
-<类型> -> int | void | double | float | char
+<程序> ::= <类型> main_fun "(" (<类型> ID)* ")" <语句块>
+<语句块>::= <语句> | { <语句块>}
+<语句>::=<if语句> | <while语句> | <for语句>| <switch-case语句>|<dowhile语句>|<breadk;>|<continue;>
+<声明语句> ::= <类型> ID (0,ID)*
+<类型> -> int | void | double | float | char|string
 <赋值语句> -> ID = <表达式>
 <break语句> -> break
+<if语句>::=” if ( ” <或语句>” ) ” ” { ”<语句块>” } ” [ “ else ”<语句块> ]
+<while语句>::=” while ( ” <或语句>” ) ” ” { ”<语句块>” } ” 
+<dowhile语句>::=” do { ” <语句块>” } ”  “ while ”<或语句> 
+<for语句>::=” for ( ” <声明语句|赋值语句 > <或语句> <自增语句|赋值语句> ” ) ” ” { ”<语句块>” } ” 
+<自增语句>::= <(ID”++”) | (ID”--”)> |  <(”++”ID) | (”--”ID)> 
+<或语句>::= <与语句>  { ”||”<与语句> } 
+<与语句>::= <非语句>  { ”&&”<非语句> } 
+<非语句>::= “ ! ” <关系语句> 
+<关系语句>::=<表达式语句> [ (“ > ”| “ < ”| “ >=” | “ <=” | “ == ” | “  != ” ) <表达式语句> ]
 
-//分支部分： 包括if-else和switch结构
-<分支语句> —> <条件语句> | <switch语句>
-<switch语句> -> switch"(" ID ")" 
-"{" 
-(case <表达式> ":" <语句块> <break语句>)*
- (default ":" <语句块> <break语句>)?
- (case <表达式> ":" <语句块> <break语句>)*
- "}"
-<条件语句> -> if "(" <条件> ")" <语句块> (else <语句块>)？
-//循环部分： 包括while，do-while,for三个结构
-<循环语句> -> <while语句> | <doWhile语句> | <for语句>
-<while语句> -> while "(" <条件> ")" <语句块>
-<doWhile语句> -> do <语句块> while"(" <条件> ")" ";"
-<for语句> -> for "(" <赋值语句> ? ";" <条件> ";" <赋值语句>? ")" <语句块>
-<条件> -> <条件> (<逻辑运算符> <条件>)*
-<条件> -> <表达式>(<关系符> <表达式>)?
-<表达式> -> 默认javacc
-<运算符> -> + | - | * | /
-<关系符> -> < | <= | >= | == | !=
-<逻辑运算符> -> "&&" | "||"
 ```
 
 ## 测试文件
